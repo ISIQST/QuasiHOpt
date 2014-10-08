@@ -21,15 +21,9 @@
     End Sub
 
     Private Sub InitializeIronPython()
-        'IronPython.Hosting.Options.PrivateBinding = True
         pyEngine = IronPython.Hosting.Python.CreateEngine
-
         pyScope = pyEngine.CreateScope
-        'pyEngine.AddToPath(AppDomain.CurrentDomain.BaseDirectory)
         pyScope.SetVariable("qst", QST)
-        'Dim src = pyEngine.CreateScriptSourceFromString("qst.AppVersion")
-        'Dim compiled = src.Compile()
-        'Debug.Print(compiled.Execute(pyScope))
     End Sub
 
     Public Sub Initialize3(InstanceName As String, ByRef AppPtr As Object) Implements Quasi97.iHOption.Initialize3
@@ -40,14 +34,9 @@
 
             InitializeIronPython()
 
-            Dim fn As Integer = FreeFile()
-            Try
-                FileOpen(fn, "log.csv", OpenMode.Input)
-                Call Input(fn, countStartStop)
-                FileClose(fn)
-            Catch ex As Exception
-
-            End Try
+            Using fn As New System.IO.StreamReader("log.csv")
+                countStartStop = fn.ReadLine
+            End Using
 
             QST.QstStatus.Message = "Hello World!"
         Catch ex As Exception
@@ -56,13 +45,12 @@
     End Sub
 
     Public Sub Terminate() Implements Quasi97.iHOption.Terminate
-        Dim fn As Integer = FreeFile()
         Try
-            FileOpen(fn, "log.csv", OpenMode.Input)
-            Call Write(fn, countStartStop)
-            FileClose(fn)
+            Using fn As New System.IO.StreamWriter("log.csv", False)
+                fn.WriteLine(countStartStop)
+            End Using
         Catch ex As Exception
-
+            MsgBox(ex.Message)
         End Try
 
         ptrForm.ownerObj = Nothing
