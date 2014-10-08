@@ -9,8 +9,6 @@
 
     Private countStartStop% = 0
     Private lHaltCounting As Boolean
-    Public pyEngine As Microsoft.Scripting.Hosting.ScriptEngine
-    Public pyScope As Microsoft.Scripting.Hosting.ScriptScope
 
     Public Sub AddNotifier(ByRef objnot As Object) Implements Quasi97.iHOption.AddNotifier
         If Not NList.Contains(objnot) Then NList.Add(objnot)
@@ -20,25 +18,11 @@
         If NList.Contains(objnot) Then NList.Remove(objnot)
     End Sub
 
-    Private Sub InitializeIronPython()
-        'IronPython.Hosting.Options.PrivateBinding = True
-        pyEngine = IronPython.Hosting.Python.CreateEngine
-
-        pyScope = pyEngine.CreateScope
-        'pyEngine.AddToPath(AppDomain.CurrentDomain.BaseDirectory)
-        pyScope.SetVariable("qst", QST)
-        'Dim src = pyEngine.CreateScriptSourceFromString("qst.AppVersion")
-        'Dim compiled = src.Compile()
-        'Debug.Print(compiled.Execute(pyScope))
-    End Sub
-
     Public Sub Initialize3(InstanceName As String, ByRef AppPtr As Object) Implements Quasi97.iHOption.Initialize3
         Try
             QST = AppPtr
             myInst = InstanceName
             myStatus = 0            'not missing
-
-            InitializeIronPython()
 
             Dim fn As Integer = FreeFile()
             Try
