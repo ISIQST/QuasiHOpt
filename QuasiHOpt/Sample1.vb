@@ -24,14 +24,9 @@
             myInst = InstanceName
             myStatus = 0            'not missing
 
-            Dim fn As Integer = FreeFile()
-            Try
-                FileOpen(fn, "log.csv", OpenMode.Input)
-                Call Input(fn, countStartStop)
-                FileClose(fn)
-            Catch ex As Exception
-
-            End Try
+            Using fn As New System.IO.StreamReader("log.csv")
+                countStartStop = Integer.Parse(fn.ReadLine)
+            End Using
 
             QST.QstStatus.Message = "Hello World!"
         Catch ex As Exception
@@ -40,13 +35,12 @@
     End Sub
 
     Public Sub Terminate() Implements Quasi97.iHOption.Terminate
-        Dim fn As Integer = FreeFile()
         Try
-            FileOpen(fn, "log.csv", OpenMode.Input)
-            Call Write(fn, countStartStop)
-            FileClose(fn)
+            Using fn As New System.IO.StreamWriter("log.csv")
+                fn.WriteLine(countStartStop.ToString)
+            End Using
         Catch ex As Exception
-
+            MsgBox(ex.Message)
         End Try
 
         ptrForm.ownerObj = Nothing
